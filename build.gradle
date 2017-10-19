@@ -1,0 +1,50 @@
+apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'idea'
+
+// 全てのライブラリの共通設定
+group = 'jp.co.sharp.util'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// ---- for Sonarqube settings. ----
+
+buildscript {
+  repositories {
+    maven { url 'http://plugins.gradle.org/m2/' }
+  }
+  dependencies {
+    classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0.1'
+  }
+}
+
+// Sonarqube向けブランチ類推
+String branch = ["sh", "-c", "git rev-parse --abbrev-ref HEAD"].execute().in.text.trim()
+if (project.hasProperty('branchName')) {
+    branch = project.branchName
+}
+
+// 全プロジェクト分のディレクトリ文字列作成
+def projectAll(suffix) {
+  return [
+    'prnsys-srv',
+    'prnsys-remoting-server',
+    'prnsys-remoting',
+    'prnsys-srv-api',
+    'prnsys-component',
+    'iclub-connector',
+    'sharp-db-prnsys'
+  ].collect{ it + suffix }.join(',')
+}
+
+// ---- for gradle sub-project settings. ----
+
+subprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://www.seasar.org/maven/maven2/' }
+        maven { url 'http://repo.opennms.org/maven2/'} // for CIFS
+    }
+}
