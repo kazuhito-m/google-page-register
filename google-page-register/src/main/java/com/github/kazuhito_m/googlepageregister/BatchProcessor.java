@@ -26,16 +26,16 @@ public class BatchProcessor {
     private List<URL> links; // TODO SpringBatchでステップ間のデータわたしがよくわからん…ので暫定
 
     @Bean
-    public Job job(JobBuilderFactory jobs, Step scrapingStep, Step s2) {
+    public Job job(JobBuilderFactory jobs, Step scrapingStep, Step googleUrlRegisterStep) {
         return jobs
                 .get("myJob")
                 .incrementer(new RunIdIncrementer())
                 .start(scrapingStep)
-                .next(s2)
+                .next(googleUrlRegisterStep)
                 .build();
     }
 
-    @Bean(name = "scrapingStep")
+    @Bean
     public Step scrapingStep() {
         return steps.get("scrapingStep").tasklet((stepContribution, chunkContext) -> {
             links = scraper.articleLinks();
@@ -43,9 +43,9 @@ public class BatchProcessor {
         }).build();
     }
 
-    @Bean(name = "s2")
-    public Step step2() {
-        return steps.get("step2").tasklet((stepContribution, chunkContext) -> {
+    @Bean
+    public Step googleUrlRegisterStep() {
+        return steps.get("googleUrlRegisterStep").tasklet((stepContribution, chunkContext) -> {
             register.register(links);
             logger.info("Page register executed.");
             return RepeatStatus.FINISHED;
