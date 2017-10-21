@@ -1,13 +1,13 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.8.RELEASE'
-	}
-	repositories {
-		jcenter()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '1.5.8.RELEASE'
+    }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 apply plugin: 'java'
@@ -17,6 +17,8 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-batch')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-starter-batch')
+    compile('org.jsoup:jsoup:1.10.3')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }

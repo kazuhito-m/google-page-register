@@ -14,5 +14,7 @@ public class GoogleUrlRegister {
 
     public void register(List<URL> links) {
         logger.info("Googleページ登録も通っているよ");
+        // TODO 以下、仮実装を失くす。
+        links.stream().forEach(System.out::println);
     }
 }
