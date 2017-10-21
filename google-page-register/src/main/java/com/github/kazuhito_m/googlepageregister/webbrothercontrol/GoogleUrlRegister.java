@@ -3,7 +3,7 @@ package com.github.kazuhito_m.googlepageregister.webbrothercontrol;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +26,48 @@ public class GoogleUrlRegister {
     @Value("${google.pass}")
     private String googlePass;
 
-    public void register(List<URL> links) throws IOException {
+    public void register(List<URL> links) throws IOException, InterruptedException {
         WebDriver driver = new WebDriverSelector().choice();
+        WebDriverWait wait = new WebDriverWait(driver, 5);
 
-        // サンプルソース
-        driver.get("http://www.google.com");
-        WebElement element = driver.findElement(By.name("q"));
-        element.sendKeys("Cheese!");
-        element.submit();
-        logger.info("Page title1 is: " + driver.getTitle());
-        (new WebDriverWait(driver, 30)).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver d) {
-                return d.getTitle().startsWith("cheese!");
-            }
-        });
-        logger.info("Page title2 is: " + driver.getTitle());
+        login(driver, wait);
+
+
+        URL articleLinkUrl = links.get(0);
+
+        driver.get("https://www.google.com/webmasters/tools/submit-url");
+
+        WebElement urlInput = driver.findElement(By.name("urlnt"));
+        urlInput.sendKeys(articleLinkUrl.toString());
+
+        WebElement robotAvoidanceCheck = driver.findElement(By.cssSelector("div.recaptcha-checkbox-checkmark"));
+        robotAvoidanceCheck.click();
+
+        // TODO 画像認識＆クリック
+        Thread.sleep(120000);
+
         driver.quit();
+    }
+
+    private void login(WebDriver driver, WebDriverWait wait) {
+        driver.get("https://www.google.com/accounts/Login?hl=ja");
+
+        WebElement emailInput = driver.findElement(By.id("identifierId"));
+        emailInput.sendKeys(googleId);
+
+        WebElement nextButton = driver.findElement(By.id("identifierNext"));
+        nextButton.click();
+
+        // アニメーションが終わるまで、少し待つ。
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("profileIdentifier")));
+
+        WebElement passwordInput = driver.findElement(By.name("password"));
+        passwordInput.sendKeys(googlePass);
+
+        WebElement passNextButton = driver.findElement(By.id("passwordNext"));
+        passNextButton.click();
+
+        // ログイン完了まで待つ
+        wait.until(ExpectedConditions.titleContains("アカウント情報"));
     }
 }
