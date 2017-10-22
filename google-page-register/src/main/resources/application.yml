@@ -4,3 +4,6 @@ google:
     password: yyy
   - gmail: zzz
     password: yyy
+settings:
+  resumeIndex: 0
+  accountChangeInterval: 10

@@ -1,5 +1,7 @@
 package com.github.kazuhito_m.googlepageregister.webbrothercontrol;
 
+import com.github.kazuhito_m.googlepageregister.webbrothercontrol.googleaccount.Account;
+import com.github.kazuhito_m.googlepageregister.webbrothercontrol.googleaccount.AccountSelector;
 import com.github.kazuhito_m.googlepageregister.webbrothercontrol.imagerecognition.AvoidRoughlyClicker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -8,6 +10,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +23,11 @@ import java.util.List;
 public class GoogleUrlRegister {
     private static Logger logger = LoggerFactory.getLogger(GoogleUrlRegister.class);
 
-    //    @Value("${google.gmail}")
-    private String gmail;
+    @Value("${settings.resumeIndex}")
+    private int resumeIndex;
 
-    //    @Value("${google.pass}")
-    private String googlePass;
+    @Value("${settings.accountChangeInterval}")
+    private int accountChangeInterval;
 
     public void register(List<URL> links) throws IOException, InterruptedException {
         WebDriver driver = new WebDriverSelector().choice();
@@ -38,8 +41,10 @@ public class GoogleUrlRegister {
 
     private void operation(WebDriver driver, WebDriverWait wait, List<URL> links) throws IOException {
         int i = 0;
-        login(driver, wait);
         for (URL articleLinkUrl : links) {
+            if (resumeIndex < i) continue;  // 途中からの場合は、飛ばす
+            if (i == resumeIndex || i % accountChangeInterval == 0)
+                login(accountSelector.next(), driver, wait);
             registerUrlForGoogle(driver, wait, articleLinkUrl, i++);
         }
     }
@@ -61,11 +66,11 @@ public class GoogleUrlRegister {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("status-message-text")));
     }
 
-    private void login(WebDriver driver, WebDriverWait wait) {
+    private void login(Account googleAcount, WebDriver driver, WebDriverWait wait) {
         driver.get("https://www.google.com/accounts/Login?hl=ja");
 
         WebElement emailInput = driver.findElement(By.id("identifierId"));
-        emailInput.sendKeys(gmail);
+        emailInput.sendKeys(googleAcount.gmail());
 
         WebElement nextButton = driver.findElement(By.id("identifierNext"));
         nextButton.click();
@@ -74,7 +79,7 @@ public class GoogleUrlRegister {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("profileIdentifier")));
 
         WebElement passwordInput = driver.findElement(By.name("password"));
-        passwordInput.sendKeys(googlePass);
+        passwordInput.sendKeys(googleAcount.password());
 
         WebElement passNextButton = driver.findElement(By.id("passwordNext"));
         passNextButton.click();
@@ -84,8 +89,10 @@ public class GoogleUrlRegister {
     }
 
     private final AvoidRoughlyClicker avoidRoughlyClicker;
+    private final AccountSelector accountSelector;
 
-    public GoogleUrlRegister(AvoidRoughlyClicker avoidRoughlyClicker) {
+    public GoogleUrlRegister(AccountSelector accountSelector, AvoidRoughlyClicker avoidRoughlyClicker) {
+        this.accountSelector = accountSelector;
         this.avoidRoughlyClicker = avoidRoughlyClicker;
     }
 

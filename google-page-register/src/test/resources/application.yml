@@ -6,3 +6,6 @@ google:
     password: twopass
   - gmail: three@gmail.com
     password: threepass
+settings:
+  resumeIndex: 0
+  accountChangeInterval: 10

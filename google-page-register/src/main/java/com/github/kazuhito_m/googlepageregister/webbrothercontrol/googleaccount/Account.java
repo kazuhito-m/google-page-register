@@ -5,11 +5,11 @@ public class Account {
     private String gmail;
     private String password;
 
-    String gmail() {
+    public String gmail() {
         return gmail;
     }
 
-    String password() {
+    public String password() {
         return password;
     }
 
