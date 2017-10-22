@@ -1,5 +1,6 @@
 package com.github.kazuhito_m.googlepageregister.webbrothercontrol;
 
+import com.github.kazuhito_m.googlepageregister.webbrothercontrol.imagerecognition.AvoidRoughlyClicker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -28,25 +29,27 @@ public class GoogleUrlRegister {
 
     public void register(List<URL> links) throws IOException, InterruptedException {
         WebDriver driver = new WebDriverSelector().choice();
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        try {
 
-        login(driver, wait);
+            WebDriverWait wait = new WebDriverWait(driver, 5);
+
+            login(driver, wait);
 
 
-        URL articleLinkUrl = links.get(0);
+            URL articleLinkUrl = links.get(0);
 
-        driver.get("https://www.google.com/webmasters/tools/submit-url");
+            driver.get("https://www.google.com/webmasters/tools/submit-url");
 
-        WebElement urlInput = driver.findElement(By.name("urlnt"));
-        urlInput.sendKeys(articleLinkUrl.toString());
+            WebElement urlInput = driver.findElement(By.name("urlnt"));
+            urlInput.sendKeys(articleLinkUrl.toString());
 
-        WebElement robotAvoidanceCheck = driver.findElement(By.cssSelector("div.recaptcha-checkbox-checkmark"));
-        robotAvoidanceCheck.click();
+            avoidRoughlyClicker.searchAndClick();
 
-        // TODO 画像認識＆クリック
-        Thread.sleep(120000);
+            logger.info("Sikuliの認識が完了。");
 
-        driver.quit();
+        } finally {
+            driver.quit();
+        }
     }
 
     private void login(WebDriver driver, WebDriverWait wait) {
@@ -70,4 +73,11 @@ public class GoogleUrlRegister {
         // ログイン完了まで待つ
         wait.until(ExpectedConditions.titleContains("アカウント情報"));
     }
+
+    private final AvoidRoughlyClicker avoidRoughlyClicker;
+
+    public GoogleUrlRegister(AvoidRoughlyClicker avoidRoughlyClicker) {
+        this.avoidRoughlyClicker = avoidRoughlyClicker;
+    }
+
 }
