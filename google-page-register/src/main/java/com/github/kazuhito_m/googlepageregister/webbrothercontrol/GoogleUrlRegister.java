@@ -30,32 +30,36 @@ public class GoogleUrlRegister {
     public void register(List<URL> links) throws IOException, InterruptedException {
         WebDriver driver = new WebDriverSelector().choice();
         try {
-
             WebDriverWait wait = new WebDriverWait(driver, 5);
-
-            login(driver, wait);
-
-
-            URL articleLinkUrl = links.get(0);
-
-            driver.get("https://www.google.com/webmasters/tools/submit-url");
-
-            WebElement urlInput = driver.findElement(By.name("urlnt"));
-            urlInput.sendKeys(articleLinkUrl.toString());
-
-            avoidRoughlyClicker.searchAndClick();
-
-            logger.info("Sikuliの認識が完了。");
-
-            WebElement submitButton = driver.findElement(By.name("submitButton"));
-            submitButton.click();
-
-            // 登録完了まで待つ
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("status-message-text")));
-
+            operation(driver, wait, links);
         } finally {
             driver.quit();
         }
+    }
+
+    private void operation(WebDriver driver, WebDriverWait wait, List<URL> links) throws IOException {
+        int i = 0;
+        login(driver, wait);
+        for (URL articleLinkUrl : links) {
+            registerUrlForGoogle(driver, wait, articleLinkUrl, i++);
+        }
+    }
+
+    private void registerUrlForGoogle(WebDriver driver, WebDriverWait wait, URL articleLinkUrl, int index) throws IOException {
+        logger.info(String.format("%d,%s", index, articleLinkUrl.toString()));
+
+        driver.get("https://www.google.com/webmasters/tools/submit-url");
+
+        WebElement urlInput = driver.findElement(By.name("urlnt"));
+        urlInput.sendKeys(articleLinkUrl.toString());
+
+        avoidRoughlyClicker.searchAndClick();
+
+        WebElement submitButton = driver.findElement(By.name("submitButton"));
+        submitButton.click();
+
+        // 登録完了まで待つ
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("status-message-text")));
     }
 
     private void login(WebDriver driver, WebDriverWait wait) {
