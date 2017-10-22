@@ -20,10 +20,10 @@ public class AvoidRoughlyClicker {
         System.setProperty("java.awt.headless", "false");
         DesktopScreenRegion screen = new DesktopScreenRegion(1);
 
-        BufferedImage image = resourceImageBy("nonRobotCheck.png");
-        Target target = new ImageTarget(image);
+        BufferedImage checkBoxImage = resourceImageBy("nonRobotCheck.png");
+        Target checkTarget = new ImageTarget(checkBoxImage);
 
-        ScreenRegion region = screen.find(target);
+        ScreenRegion region = screen.find(checkTarget);
 
         ScreenLocation location = region.getCenter();
         location.setX(location.getX() + 3600);  // 謎の補正。3600ズレル。
@@ -36,8 +36,8 @@ public class AvoidRoughlyClicker {
 
         ScreenRegion checkedRegion = screen.wait(checkedTarget, 5000);
 
-        if (checkedRegion == null || checkedRegion.getScore() < 0.9) throw new IllegalAccessError();
-        logger.info("score:" + checkedRegion.getScore());
+        if (checkedRegion == null || checkedRegion.getScore() < 0.9)
+            throw new IllegalAccessError("画像認識で「非ロボットチェック後のアイコン」が見つからなかった。");
     }
 
     private BufferedImage resourceImageBy(String resourcePath) throws IOException {
