@@ -1,0 +1,8 @@
+google:
+  accounts:
+  - gmail: one@gmail.com
+    password: onepass
+  - gmail: two@gmail.com
+    password: twopass
+  - gmail: three@gmail.com
+    password: threepass

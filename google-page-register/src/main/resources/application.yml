@@ -1,3 +1,6 @@
 google:
-  id: xxx
-  pass: yyy
+  accounts:
+  - gmail: xxx,yyy
+    password: yyy
+  - gmail: zzz
+    password: yyy

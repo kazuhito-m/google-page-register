@@ -8,7 +8,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +20,10 @@ import java.util.List;
 public class GoogleUrlRegister {
     private static Logger logger = LoggerFactory.getLogger(GoogleUrlRegister.class);
 
-    @Value("${google.id}")
-    private String googleId;
+    //    @Value("${google.gmail}")
+    private String gmail;
 
-    @Value("${google.pass}")
+    //    @Value("${google.pass}")
     private String googlePass;
 
     public void register(List<URL> links) throws IOException, InterruptedException {
@@ -66,7 +65,7 @@ public class GoogleUrlRegister {
         driver.get("https://www.google.com/accounts/Login?hl=ja");
 
         WebElement emailInput = driver.findElement(By.id("identifierId"));
-        emailInput.sendKeys(googleId);
+        emailInput.sendKeys(gmail);
 
         WebElement nextButton = driver.findElement(By.id("identifierNext"));
         nextButton.click();
