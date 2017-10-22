@@ -47,6 +47,12 @@ public class GoogleUrlRegister {
 
             logger.info("Sikuliの認識が完了。");
 
+            WebElement submitButton = driver.findElement(By.name("submitButton"));
+            submitButton.click();
+
+            // 登録完了まで待つ
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("status-message-text")));
+
         } finally {
             driver.quit();
         }
