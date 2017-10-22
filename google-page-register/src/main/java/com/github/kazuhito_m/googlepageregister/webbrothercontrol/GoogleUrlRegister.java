@@ -45,11 +45,11 @@ public class GoogleUrlRegister {
             if (resumeIndex < i) continue;  // 途中からの場合は、飛ばす
             if (i == resumeIndex || i % accountChangeInterval == 0)
                 login(accountSelector.next(), driver, wait);
-            registerUrlForGoogle(driver, wait, articleLinkUrl, i++);
+            registerUrlForGoogle(articleLinkUrl, i++, driver, wait);
         }
     }
 
-    private void registerUrlForGoogle(WebDriver driver, WebDriverWait wait, URL articleLinkUrl, int index) throws IOException {
+    private void registerUrlForGoogle(URL articleLinkUrl, int index, WebDriver driver, WebDriverWait wait) throws IOException {
         logger.info(String.format("%d,%s", index, articleLinkUrl.toString()));
 
         driver.get("https://www.google.com/webmasters/tools/submit-url");
