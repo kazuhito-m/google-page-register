@@ -50,12 +50,12 @@ public class GoogleUrlRegister {
                 driverWrapper.initialize();
                 login(accountSelector.next(), i, driverWrapper.driver(), driverWrapper.driverWait());
             }
-            logger.info(String.format("registerUrl:%d,%s", i, articleLinkUrl.toString()));
-            registerUrlForGoogle(articleLinkUrl, i++, driverWrapper.driver(), driverWrapper.driverWait());
+            logger.info(String.format("registerUrl:%d,%s", i++, articleLinkUrl.toString()));
+            registerUrlForGoogle(articleLinkUrl, driverWrapper.driver(), driverWrapper.driverWait());
         }
     }
 
-    private void registerUrlForGoogle(URL articleLinkUrl, int index, WebDriver driver, WebDriverWait wait) throws IOException {
+    private void registerUrlForGoogle(URL articleLinkUrl, WebDriver driver, WebDriverWait wait) throws IOException {
         driver.get("https://www.google.com/webmasters/tools/submit-url");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.name("urlnt")));
 
