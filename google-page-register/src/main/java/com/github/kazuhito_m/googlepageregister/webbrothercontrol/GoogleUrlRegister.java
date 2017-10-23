@@ -3,6 +3,8 @@ package com.github.kazuhito_m.googlepageregister.webbrothercontrol;
 import com.github.kazuhito_m.googlepageregister.webbrothercontrol.googleaccount.Account;
 import com.github.kazuhito_m.googlepageregister.webbrothercontrol.googleaccount.AccountSelector;
 import com.github.kazuhito_m.googlepageregister.webbrothercontrol.imagerecognition.AvoidRoughlyClicker;
+import com.github.kazuhito_m.googlepageregister.webbrothercontrol.selenium.WebDriverSelector;
+import com.github.kazuhito_m.googlepageregister.webbrothercontrol.selenium.WebDriverWrapper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,29 +32,32 @@ public class GoogleUrlRegister {
     private int accountChangeInterval;
 
     public void register(List<URL> links) throws IOException, InterruptedException {
-        WebDriver driver = new WebDriverSelector().choice();
+        WebDriverWrapper driverWrapper = null;
         try {
-            WebDriverWait wait = new WebDriverWait(driver, 5);
-            operation(driver, wait, links);
+            driverWrapper = new WebDriverWrapper(new WebDriverSelector());
+            operation(links, driverWrapper);
         } finally {
-            driver.quit();
+            if (driverWrapper != null) driverWrapper.quit();
         }
     }
 
-    private void operation(WebDriver driver, WebDriverWait wait, List<URL> links) throws IOException {
+    private void operation(List<URL> links, WebDriverWrapper driverWrapper) throws IOException {
         int i = 0;
         for (URL articleLinkUrl : links) {
-            if (resumeIndex < i) continue;  // 途中からの場合は、飛ばす
-            if (i == resumeIndex || i % accountChangeInterval == 0)
-                login(accountSelector.next(), driver, wait);
-            registerUrlForGoogle(articleLinkUrl, i++, driver, wait);
+            if (resumeIndex > i) continue;  // 途中からの場合は、飛ばす
+            if (i == resumeIndex || i % accountChangeInterval == 0) {
+                logger.info(String.format("login:%d", i));
+                driverWrapper.initialize();
+                login(accountSelector.next(), i, driverWrapper.driver(), driverWrapper.driverWait());
+            }
+            logger.info(String.format("registerUrl:%d,%s", i, articleLinkUrl.toString()));
+            registerUrlForGoogle(articleLinkUrl, i++, driverWrapper.driver(), driverWrapper.driverWait());
         }
     }
 
     private void registerUrlForGoogle(URL articleLinkUrl, int index, WebDriver driver, WebDriverWait wait) throws IOException {
-        logger.info(String.format("%d,%s", index, articleLinkUrl.toString()));
-
         driver.get("https://www.google.com/webmasters/tools/submit-url");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.name("urlnt")));
 
         WebElement urlInput = driver.findElement(By.name("urlnt"));
         urlInput.sendKeys(articleLinkUrl.toString());
@@ -66,8 +71,9 @@ public class GoogleUrlRegister {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("status-message-text")));
     }
 
-    private void login(Account googleAcount, WebDriver driver, WebDriverWait wait) {
+    private void login(Account googleAcount, int index, WebDriver driver, WebDriverWait wait) {
         driver.get("https://www.google.com/accounts/Login?hl=ja");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("identifierId")));
 
         WebElement emailInput = driver.findElement(By.id("identifierId"));
         emailInput.sendKeys(googleAcount.gmail());

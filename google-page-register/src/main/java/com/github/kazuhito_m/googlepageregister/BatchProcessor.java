@@ -47,7 +47,7 @@ public class BatchProcessor {
     public Step googleUrlRegisterStep() {
         return steps.get("googleUrlRegisterStep").tasklet((stepContribution, chunkContext) -> {
             register.register(links);
-            logger.info("Page register executed.");
+            logger.info("Page register execute succeed.");
             return RepeatStatus.FINISHED;
         }).build();
     }

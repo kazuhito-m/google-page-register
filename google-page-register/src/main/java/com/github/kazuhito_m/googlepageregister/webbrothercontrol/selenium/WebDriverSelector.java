@@ -1,4 +1,4 @@
-package com.github.kazuhito_m.googlepageregister.webbrothercontrol;
+package com.github.kazuhito_m.googlepageregister.webbrothercontrol.selenium;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
@@ -14,7 +14,14 @@ public class WebDriverSelector {
 
     private static Logger logger = LoggerFactory.getLogger(WebDriverSelector.class);
 
+    private boolean initialized = false;
+
     public WebDriver choice() throws IOException {
+        if (!initialized) webDriverEnvironmentInitializeByOs();
+        return new ChromeDriver();
+    }
+
+    private void webDriverEnvironmentInitializeByOs() throws IOException {
         URL webDriverUrlInJar = webDriverUrl();
 
         // Jar内のファイルでは「実行」出来ない。一時ファイルにコピー・実行権限を与える。
@@ -24,7 +31,7 @@ public class WebDriverSelector {
         logger.info("Copy WebDriver to executable temp file : " + tempWebDriverPath.getCanonicalPath());
 
         System.setProperty("webdriver.chrome.driver", tempWebDriverPath.getCanonicalPath());
-        return new ChromeDriver();
+        initialized = true;
     }
 
     private URL webDriverUrl() {
